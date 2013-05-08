@@ -39,6 +39,10 @@ public class JsonTest {
 		test(map, "array2", Arrays.asList(1.0, 2.0, 3.0));
 		test(map, "array3", Arrays.asList(true, false, true));
 		test(map, "array4", Arrays.asList("str1", 2.0, true));
+		
+		String str2 = JsonUtils.serialize(map);
+		System.out.println("Serialize: " + str2);
+		assertEquals(map, JsonUtils.parse(str2));
 	}
 	
 	private void test(Map<String, Object> map, String key, Object expected) {

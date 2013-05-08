@@ -137,7 +137,9 @@ public class SendGridClient {
 	}
 	
 	//Mail
-	public void mail(WebMail mail, File... attachements) {
+	public void mail(WebMail mail, File... attachements) throws IOException, SendGridException {
+		String json = doRequest("/mail.send.json", mail);
+System.out.println("mail send: " + json);
 	}
 	
 	//Multiple Credentials   - NOT IMPLEMENTED

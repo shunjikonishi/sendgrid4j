@@ -12,14 +12,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Date;
 
 import jp.co.flect.sendgrid.model.InvalidEmail;
+import jp.co.flect.sendgrid.model.WebMail;
 
 public class SendGridTest {
 	
 	private static String USERNAME;
 	private static String PASSWORD;
+	private static String MAIL_FROM;
+	private static String MAIL_TO;
+	
 	@BeforeClass
 	public static void setup() throws Exception {
 		Properties props = new Properties();
@@ -30,11 +36,15 @@ public class SendGridTest {
 		} finally {
 			is.close();
 		}
-		USERNAME = props.getProperty("SENDGRID_USERNAME");
-		PASSWORD = props.getProperty("SENDGRID_PASSWORD");
+		USERNAME  = props.getProperty("SENDGRID_USERNAME");
+		PASSWORD  = props.getProperty("SENDGRID_PASSWORD");
+		MAIL_FROM = props.getProperty("MAIL_FROM");
+		MAIL_TO   = props.getProperty("MAIL_TO");
 		
 		assertNotNull(USERNAME);
 		assertNotNull(PASSWORD);
+		assertNotNull(MAIL_FROM);
+		assertNotNull(MAIL_TO);
 	}
 	
 	@Test
@@ -61,5 +71,18 @@ public class SendGridTest {
 			System.out.println("limitError2:" + e.getAllMessages());
 			assertTrue(e.getMessage().indexOf("Limit") > 0);
 		}
+	}
+	
+	@Test
+	public void sendMail() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		WebMail mail = new WebMail();
+		mail.setFrom(MAIL_FROM);
+//		mail.setTo(MAIL_TO);
+		mail.setToList(Arrays.asList("k-shunji@flect.co.jp", "shun.konishi@nifty.com"));
+		mail.setSubject("テストメール: " + new Date());
+		mail.setText("てすと\nてすと");
+		
+		client.mail(mail);
 	}
 }

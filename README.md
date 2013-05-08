@@ -4,7 +4,7 @@ sendgrid4j
 
 Overview
 --------
-Simple java client for SendGrid
+Simple SendGrid client for Java
 
 License
 -------

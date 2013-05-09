@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.nio.charset.Charset;
 import jp.co.flect.sendgrid.json.JsonUtils;
-import jp.co.flect.sendgrid.model.WebMail;
 import jp.co.flect.sendgrid.SendGridException;
 
 import org.apache.http.auth.AuthScope;
@@ -16,6 +16,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -33,21 +36,8 @@ public class HttpClientTransport implements Transport {
 	private int soTimeout = 0;
 	private int connectionTimeout = 0;
 	
-	public String send(String url, Map<String, String[]> params) throws IOException, SendGridException {
-		HttpClient client = getHttpClient();
-		List<NameValuePair> list = new ArrayList<NameValuePair>();
-		for (Map.Entry<String, String[]> entry : params.entrySet()) {
-			String key = entry.getKey();
-			for (String s : entry.getValue()) {
-				list.add(new BasicNameValuePair(key, s));
-			}
-		}
-		HttpPost method = new HttpPost(url);
-		method.setEntity(new UrlEncodedFormEntity(list, "utf-8"));
-		
-		HttpResponse res = client.execute(method);
+	private String handleResponse(HttpResponse res) throws IOException, SendGridException {
 		String body = EntityUtils.toString(res.getEntity(), "utf-8");
-System.out.println("execute " + url + ": " + res.getStatusLine());
 System.out.println(body);
 		
 		if (res.getStatusLine().getStatusCode() != 200) {
@@ -67,7 +57,50 @@ System.out.println(body);
 		return body;
 	}
 	
-	public void send(String url, WebMail mail, File... attachement) throws IOException, SendGridException {
+	public String send(String url, Map<String, String[]> params, File... attachement) throws IOException, SendGridException {
+		if (attachement == null || attachement.length == 0) {
+			return simpleSend(url, params);
+		} else {
+			return multipartSend(url, params, attachement);
+		}
+	}
+	
+	private String simpleSend(String url, Map<String, String[]> params) throws IOException, SendGridException {
+		HttpClient client = getHttpClient();
+		List<NameValuePair> list = new ArrayList<NameValuePair>();
+		for (Map.Entry<String, String[]> entry : params.entrySet()) {
+			String key = entry.getKey();
+			for (String s : entry.getValue()) {
+				list.add(new BasicNameValuePair(key, s));
+			}
+		}
+		HttpPost method = new HttpPost(url);
+		method.setEntity(new UrlEncodedFormEntity(list, "utf-8"));
+		
+		HttpResponse res = client.execute(method);
+System.out.println("execute " + url + ": " + res.getStatusLine());
+		return handleResponse(res);
+	}
+	
+	public String multipartSend(String url, Map<String, String[]> params, File... attachement) throws IOException, SendGridException {
+		HttpClient client = getHttpClient();
+		HttpPost method = new HttpPost(url);
+		MultipartEntity entity = new MultipartEntity();
+		for (Map.Entry<String, String[]> entry : params.entrySet()) {
+			String key = entry.getKey();
+			for (String s : entry.getValue()) {
+				entity.addPart(key, new StringBody(s, Charset.forName("utf-8")));
+			}
+		}
+		for (File f : attachement) {
+			String filename = TransportUtils.encodeText(f.getName());
+			String key = "files[" + filename + "]";
+			entity.addPart(key, new FileBody(f, filename, "application/octet-stream", "utf-8"));
+		}
+		method.setEntity(entity);
+		HttpResponse res = client.execute(method);
+System.out.println("execute " + url + ": " + res.getStatusLine());
+		return handleResponse(res);
 	}
 	
 	public ProxyInfo getProxyInfo() { return this.proxyInfo;}

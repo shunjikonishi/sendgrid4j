@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.IOException;
 
 import jp.co.flect.sendgrid.transport.Transport;
+import jp.co.flect.sendgrid.transport.TransportUtils;
 import jp.co.flect.sendgrid.transport.HttpClientTransport;
 import jp.co.flect.sendgrid.model.AbstractRequest;
+import jp.co.flect.sendgrid.model.CommonRequest;
 import jp.co.flect.sendgrid.model.App;
 import jp.co.flect.sendgrid.model.Block;
 import jp.co.flect.sendgrid.model.Bounce;
@@ -51,6 +53,16 @@ public class SendGridClient {
 		map.put("api_key", new String[] { this.apikey});
 		
 		return this.transport.send(this.baseUrl + path, map);
+	}
+	
+	private void checkResponse(String json) throws SendGridException {
+		Map<String, Object> map = JsonUtils.parse(json);
+		if (map.get("error") != null || map.get("errors") != null) {
+			throw new SendGridException(map);
+		}
+		if (!"success".equals(map.get("message"))) {
+			throw new SendGridException(json);
+		}
 	}
 	
 	//Blocks
@@ -138,8 +150,21 @@ public class SendGridClient {
 	
 	//Mail
 	public void mail(WebMail mail, File... attachements) throws IOException, SendGridException {
-		String json = doRequest("/mail.send.json", mail);
-System.out.println("mail send: " + json);
+		Map<String, String[]> params = mail.getParams();
+		params.put("api_user", new String[] { this.username});
+		params.put("api_key", new String[] { this.apikey});
+		if (mail.getContent() != null) {
+			for (Map.Entry<String, String> entry : mail.getContent().entrySet()) {
+				String key = "content[" + TransportUtils.encodeText(entry.getKey()) + "]";
+				String value = entry.getValue();
+				params.put(key, new String[] { value });
+			}
+		}
+		String xsmtp = mail.getXSmtpApiAsString();
+		if (xsmtp != null) {
+			params.put("x-smtpapi", new String[] { xsmtp});
+		}
+		checkResponse(this.transport.send(this.baseUrl + "/mail.send.json", params, attachements));
 	}
 	
 	//Multiple Credentials   - NOT IMPLEMENTED
@@ -170,12 +195,27 @@ System.out.println("mail send: " + json);
 	public void deleteSpamReports(SpamReport.Delete request) {
 	}
 	
-	public List<Statistic> getStatistics(Statistic.Get request) {
-		return null;
+	//Statistics
+	public List<Statistic> getStatistics(Statistic.Get request) throws IOException, SendGridException {
+		String json = doRequest("/stats.get.json", request);
+		List<Map<String, Object>> list = JsonUtils.parseArray(json);
+		List<Statistic> ret = new ArrayList<Statistic>();
+		for (Map<String, Object> map : list) {
+			ret.add(new Statistic(map));
+		}
+		return ret;
 	}
 	
-	public List<String> getCategoryList() {
-		return null;
+	public List<String> getCategoryList() throws IOException, SendGridException {
+		CommonRequest request = new CommonRequest();
+		request.set("list", "true");
+		String json = doRequest("/stats.get.json", request);
+		List<Map<String, Object>> list = JsonUtils.parseArray(json);
+		List<String> ret = new ArrayList<String>();
+		for (Map<String, Object> map : list) {
+			ret.add(map.get("category").toString());
+		}
+		return ret;
 	}
 	
 	//Unsubscribles

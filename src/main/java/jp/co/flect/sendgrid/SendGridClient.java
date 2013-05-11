@@ -60,78 +60,105 @@ public class SendGridClient {
 		if (map.get("error") != null || map.get("errors") != null) {
 			throw new SendGridException(map);
 		}
-		if (!"success".equals(map.get("message"))) {
-			throw new SendGridException(json);
+		String msg = (String)map.get("message");
+		if (!"success".equals(msg)) {
+			throw new SendGridException(msg == null ? json : msg);
 		}
 	}
 	
 	//Blocks
-	public List<Block> getBlocks(Block.Get request) {
-		return null;
+	public List<Block> getBlocks(Block.Get request) throws IOException, SendGridException {
+		String json = doRequest("/blocks.get.json", request);
+		List<Map<String, Object>> list = JsonUtils.parseArray(json);
+		List<Block> ret = new ArrayList<Block>();
+		for (Map<String, Object> map : list) {
+			ret.add(new Block(map));
+		}
+		return ret;
 	}
 	
-	public void deleteBlocks(Block.Delete request) {
+	public void deleteBlocks(Block.Delete request) throws IOException, SendGridException {
+		String json = doRequest("/blocks.delete.json", request);
+		checkResponse(json);
 	}
 	
 	//Bounce
-	public List<Bounce> getBounces(Bounce.Get request) {
-		return null;
+	public List<Bounce> getBounces(Bounce.Get request) throws IOException, SendGridException {
+		String json = doRequest("/bounces.get.json", request);
+		List<Map<String, Object>> list = JsonUtils.parseArray(json);
+		List<Bounce> ret = new ArrayList<Bounce>();
+		for (Map<String, Object> map : list) {
+			ret.add(new Bounce(map));
+		}
+		return ret;
 	}
 	
-	public void deleteBounces(Bounce.Delete request) {
+	public void deleteBounces(Bounce.Delete request) throws IOException, SendGridException {
+		String json = doRequest("/bounces.delete.json", request);
+		checkResponse(json);
 	}
 	
-	public int countBounces(Bounce.Count request) {
-		return 0;
+	public int countBounces() throws IOException, SendGridException {
+		return countBounces(new Bounce.Count());
+	}
+	
+	public int countBounces(Bounce.Count request) throws IOException, SendGridException {
+		String json = doRequest("/bounces.count.json", request);
+		Map<String, Object> map = JsonUtils.parse(json);
+		Double count = (Double)map.get("count");
+		if (count == null) {
+			throw new SendGridException(json);
+		}
+		return count.intValue();
 	}
 	
 	//Filter commands
-	public List<App> getAvailableApps() {
+	public List<App> getAvailableApps() throws IOException, SendGridException {
 		return null;
 	}
 	
-	public void activateApp(String name) {
+	public void activateApp(String name) throws IOException, SendGridException {
 	}
 	
-	public void deactivateApp(String name) {
+	public void deactivateApp(String name) throws IOException, SendGridException {
 	}
 	
-	public void setupApp(App app) {
+	public void setupApp(App app) throws IOException, SendGridException {
 	}
 	
-	public App getAppSettings(String name) {
+	public App getAppSettings(String name) throws IOException, SendGridException {
 		return null;
 	}
 	
 	//Individual apps
-	public List<String> getAddressWhilteList() {
+	public List<String> getAddressWhilteList() throws IOException, SendGridException {
 		return null;
 	}
 	
-	public void setAddressWhiteList(List<String> list) {
+	public void setAddressWhiteList(List<String> list) throws IOException, SendGridException {
 	}
 	
-	public String getBcc() {
+	public String getBcc() throws IOException, SendGridException {
 		return null;
 	}
 	
-	public void setBcc(String bcc) {
+	public void setBcc(String bcc) throws IOException, SendGridException {
 	}
 	
-	public boolean isEnableClickTrackingInPlainText() {
+	public boolean isEnableClickTrackingInPlainText() throws IOException, SendGridException {
 		return false;
 	}
 	
-	public void setEnableClickTrackingInPlainText(boolean b) {
+	public void setEnableClickTrackingInPlainText(boolean b) throws IOException, SendGridException {
 	}
 	
-	public void setDomainKeys(String domain, boolean sender) {
+	public void setDomainKeys(String domain, boolean sender) throws IOException, SendGridException {
 	}
 	
-	public void setDKIM(String domain, boolean useFrom) {
+	public void setDKIM(String domain, boolean useFrom) throws IOException, SendGridException {
 	}
 	
-	public void setEventNotification(String url, List<Event> enableEvents) {
+	public void setEventNotification(String url, List<Event> enableEvents) throws IOException, SendGridException {
 	}
 	
 	//InvalidEmails
@@ -145,7 +172,7 @@ public class SendGridClient {
 		return ret;
 	}
 	
-	public void deleteInvalidEmails(InvalidEmail.Delete request) {
+	public void deleteInvalidEmails(InvalidEmail.Delete request) throws IOException, SendGridException {
 	}
 	
 	//Mail
@@ -171,28 +198,28 @@ public class SendGridClient {
 	//Parse WebHook Settings - NOT IMPLEMENTED
 	
 	//Profile
-	public Profile getProfile() {
+	public Profile getProfile() throws IOException, SendGridException {
 		return null;
 	}
 	
-	public void setProfile(Profile profile) {
+	public void setProfile(Profile profile) throws IOException, SendGridException {
 	}
 	
-	public void setPassword(String newPassword) {
+	public void setPassword(String newPassword) throws IOException, SendGridException {
 	}
 	
-	public void setUsername(String newUsername) {
+	public void setUsername(String newUsername) throws IOException, SendGridException {
 	}
 	
-	public void setEmail(String newEmail) {
+	public void setEmail(String newEmail) throws IOException, SendGridException {
 	}
 	
 	//SpamReports
-	public List<SpamReport> getSpamReports(SpamReport.Get request) {
+	public List<SpamReport> getSpamReports(SpamReport.Get request) throws IOException, SendGridException {
 		return null;
 	}
 	
-	public void deleteSpamReports(SpamReport.Delete request) {
+	public void deleteSpamReports(SpamReport.Delete request) throws IOException, SendGridException {
 	}
 	
 	//Statistics
@@ -219,13 +246,13 @@ public class SendGridClient {
 	}
 	
 	//Unsubscribles
-	public List<Unsubscribe> getUnsubscribes(Unsubscribe.Get request) {
+	public List<Unsubscribe> getUnsubscribes(Unsubscribe.Get request) throws IOException, SendGridException {
 		return null;
 	}
 	
-	public void deleteUnsubscribes(Unsubscribe.Delete request) {
+	public void deleteUnsubscribes(Unsubscribe.Delete request) throws IOException, SendGridException {
 	}
 	
-	public void addUnsubscribes(Unsubscribe.Add request) {
+	public void addUnsubscribes(Unsubscribe.Add request) throws IOException, SendGridException {
 	}
 }

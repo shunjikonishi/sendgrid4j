@@ -21,12 +21,12 @@ import java.util.HashMap;
 import jp.co.flect.sendgrid.model.InvalidEmail;
 import jp.co.flect.sendgrid.model.WebMail;
 
+import static jp.co.flect.sendgrid.SendGridTest.USERNAME;
+import static jp.co.flect.sendgrid.SendGridTest.PASSWORD;
+import static jp.co.flect.sendgrid.SendGridTest.MAIL_FROM;
+import static jp.co.flect.sendgrid.SendGridTest.MAIL_TO;
+
 public class MailSendTest {
-	
-	private static final String USERNAME = SendGridTest.USERNAME;
-	private static final String PASSWORD = SendGridTest.PASSWORD;
-	private static final String MAIL_FROM = SendGridTest.MAIL_FROM;
-	private static final String MAIL_TO = SendGridTest.MAIL_TO;
 	
 	@Test
 	public void sendMail() throws Exception {
@@ -67,7 +67,7 @@ public class MailSendTest {
 		mail.setText("添付ファイルテスト\nてすと\n\u2650\u2764\u270f\u2708" + new String(Character.toChars(0x1F419)));
 		
 		File f1 = new File("testdata/test.zip");
-		File f2 = new File("testdata/日本語.txt");
+		File f2 = new File("testdata/test.txt");
 		
 		client.mail(mail, f1, f2);
 	}

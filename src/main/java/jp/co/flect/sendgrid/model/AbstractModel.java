@@ -49,6 +49,17 @@ public abstract class AbstractModel {
 		}
 	}
 	
+	protected boolean doGetBoolean(String name) {
+		Object o = this.map.get(name);
+		if (o == null) {
+			return false;
+		} else if (o instanceof Boolean) {
+			return ((Boolean)o).booleanValue();
+		} else {
+			return "true".equals(o.toString());
+		}
+	}
+	
 	protected String doGetString(String name) {
 		Object o = this.map.get(name);
 		return o == null ? null : o.toString();

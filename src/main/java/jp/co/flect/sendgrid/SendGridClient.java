@@ -114,13 +114,27 @@ public class SendGridClient {
 	
 	//Filter commands
 	public List<App> getAvailableApps() throws IOException, SendGridException {
-		return null;
+		String json = doRequest("/filter.getavailable.json", new CommonRequest());
+		List<Map<String, Object>> list = JsonUtils.parseArray(json);
+		List<App> ret = new ArrayList<App>();
+		for (Map<String, Object> map : list) {
+			ret.add(new App(map));
+		}
+		return ret;
 	}
 	
 	public void activateApp(String name) throws IOException, SendGridException {
+		CommonRequest request = new CommonRequest();
+		request.set("name", name);
+		String json = doRequest("/filter.activate.json", request);
+		checkResponse(json);
 	}
 	
 	public void deactivateApp(String name) throws IOException, SendGridException {
+		CommonRequest request = new CommonRequest();
+		request.set("name", name);
+		String json = doRequest("/filter.deactivate.json", request);
+		checkResponse(json);
 	}
 	
 	public void setupApp(App app) throws IOException, SendGridException {

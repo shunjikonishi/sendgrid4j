@@ -16,7 +16,15 @@ public class InvalidEmail extends AbstractModel {
    	public static class Get extends BasicGetRequest {
 	}
 	
-	public static class Delete {
+	public static class Delete extends AbstractRequest{
+		
+		public Delete() {}
+		public Delete(String email) {
+			setEmail(email);
+		}
+		
+		public String getEmail() { return doGetString("email");}
+		public void setEmail(String s) { doSetString("email", s);}
 	}
 	
 }

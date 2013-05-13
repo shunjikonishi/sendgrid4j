@@ -20,7 +20,7 @@ This library requires following jars.
 
 Usage
 -----
-Sending mail
+Send mail
 
     SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
     WebMail mail = new WebMail();
@@ -78,5 +78,10 @@ Get statistics
             "RepeatSpamReports = " + stat.getRepeatSpamReports() + ", " +
             "");
     }
+
+Each classes are the simple wrapper of WebAPI parameters and response JSON.
+Please see the SendGrid WebAPI documentation to know the meaning of each properties.
+
+http://sendgrid.com/docs/API_Reference/Web_API/index.html
 
 

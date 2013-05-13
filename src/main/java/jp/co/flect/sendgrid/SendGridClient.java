@@ -3,6 +3,7 @@ package jp.co.flect.sendgrid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
 
@@ -20,7 +21,6 @@ import jp.co.flect.sendgrid.model.Profile;
 import jp.co.flect.sendgrid.model.SpamReport;
 import jp.co.flect.sendgrid.model.Statistic;
 import jp.co.flect.sendgrid.model.Unsubscribe;
-import jp.co.flect.sendgrid.event.Event;
 import jp.co.flect.sendgrid.json.JsonUtils;
 
 public class SendGridClient {
@@ -55,7 +55,7 @@ public class SendGridClient {
 		return this.transport.send(this.baseUrl + path, map);
 	}
 	
-	private void checkResponse(String json) throws SendGridException {
+	private Map<String, Object> checkResponse(String json) throws SendGridException {
 		Map<String, Object> map = JsonUtils.parse(json);
 		if (map.get("error") != null || map.get("errors") != null) {
 			throw new SendGridException(map);
@@ -64,6 +64,7 @@ public class SendGridClient {
 		if (!"success".equals(msg)) {
 			throw new SendGridException(msg == null ? json : msg);
 		}
+		return map;
 	}
 	
 	//Blocks
@@ -138,41 +139,59 @@ public class SendGridClient {
 	}
 	
 	public void setupApp(App app) throws IOException, SendGridException {
+		CommonRequest request = new CommonRequest();
+		request.set("name", app.getName());
+		for (Map.Entry<String, Object> entry : app.getSettings().entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			if (value == null) {
+				request.set(key, (String)null);
+			} else if (value instanceof List) {
+				request.set(key, (List<String>)value);
+			} else {
+				request.set(key, value.toString());
+			}
+		}
+		String json = doRequest("/filter.setup.json", request);
+		checkResponse(json);
 	}
 	
 	public App getAppSettings(String name) throws IOException, SendGridException {
-		return null;
+		CommonRequest request = new CommonRequest();
+		request.set("name", name);
+		String json = doRequest("/filter.getsettings.json", request);
+		Map<String, Object> map = JsonUtils.parse(json);
+		if (!map.containsKey("settings")) {
+			throw new SendGridException(map);
+		}
+		Map<String, Object> settings = (Map<String, Object>)map.get("settings");
+		return new App(name, settings);
 	}
 	
 	//Individual apps
 	public List<String> getAddressWhilteList() throws IOException, SendGridException {
-		return null;
+		App app = getAppSettings("addresswhitelist");
+		return app.getSettingAsList("list");
 	}
 	
 	public void setAddressWhiteList(List<String> list) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("list", list);
+		App app = new App("addresswhitelist", settings);
+		setupApp(app);
 	}
 	
 	public String getBcc() throws IOException, SendGridException {
-		return null;
+		App app = getAppSettings("bcc");
+		String ret = app.getSettingAsString("email");
+		return ret == null || ret.length() == 0 ? null : ret;
 	}
 	
 	public void setBcc(String bcc) throws IOException, SendGridException {
-	}
-	
-	public boolean isEnableClickTrackingInPlainText() throws IOException, SendGridException {
-		return false;
-	}
-	
-	public void setEnableClickTrackingInPlainText(boolean b) throws IOException, SendGridException {
-	}
-	
-	public void setDomainKeys(String domain, boolean sender) throws IOException, SendGridException {
-	}
-	
-	public void setDKIM(String domain, boolean useFrom) throws IOException, SendGridException {
-	}
-	
-	public void setEventNotification(String url, List<Event> enableEvents) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("email", bcc);
+		App app = new App("bcc", settings);
+		setupApp(app);
 	}
 	
 	//InvalidEmails
@@ -187,6 +206,8 @@ public class SendGridClient {
 	}
 	
 	public void deleteInvalidEmails(InvalidEmail.Delete request) throws IOException, SendGridException {
+		String json = doRequest("/invalidemails.delete.json", request);
+		checkResponse(json);
 	}
 	
 	//Mail
@@ -213,27 +234,62 @@ public class SendGridClient {
 	
 	//Profile
 	public Profile getProfile() throws IOException, SendGridException {
-		return null;
+		CommonRequest request = new CommonRequest();
+		String json = doRequest("/profile.get.json", request);
+		List<Map<String, Object>> list = JsonUtils.parseArray(json);
+		if (list == null || list.size() != 1) {
+			throw new IllegalStateException();
+		}
+		return new Profile(list.get(0));
 	}
 	
 	public void setProfile(Profile profile) throws IOException, SendGridException {
+		CommonRequest request = new CommonRequest();
+		for (Map.Entry<String, String> entry : profile.getParameters().entrySet()) {
+			request.set(entry.getKey(), entry.getValue());
+		}
+		String json = doRequest("/profile.set.json", request);
+		checkResponse(json);
 	}
 	
 	public void setPassword(String newPassword) throws IOException, SendGridException {
+		CommonRequest request = new CommonRequest();
+		request.set("password", newPassword);
+		request.set("confirm_password", newPassword);
+		String json = doRequest("/password.set.json", request);
+		checkResponse(json);
+		this.apikey = newPassword;
 	}
 	
-	public void setUsername(String newUsername) throws IOException, SendGridException {
+	public void setUserName(String newUsername) throws IOException, SendGridException {
+		CommonRequest request = new CommonRequest();
+		request.set("username", newUsername);
+		String json = doRequest("/profile.setUsername.json", request);
+		checkResponse(json);
+		this.username = newUsername;
 	}
 	
 	public void setEmail(String newEmail) throws IOException, SendGridException {
+		CommonRequest request = new CommonRequest();
+		request.set("email", newEmail);
+		String json = doRequest("/profile.setEmail.json", request);
+		checkResponse(json);
 	}
 	
 	//SpamReports
 	public List<SpamReport> getSpamReports(SpamReport.Get request) throws IOException, SendGridException {
-		return null;
+		String json = doRequest("/spamreports.get.json", request);
+		List<Map<String, Object>> list = JsonUtils.parseArray(json);
+		List<SpamReport> ret = new ArrayList<SpamReport>();
+		for (Map<String, Object> map : list) {
+			ret.add(new SpamReport(map));
+		}
+		return ret;
 	}
 	
 	public void deleteSpamReports(SpamReport.Delete request) throws IOException, SendGridException {
+		String json = doRequest("/spamreports.delete.json", request);
+		checkResponse(json);
 	}
 	
 	//Statistics
@@ -261,12 +317,22 @@ public class SendGridClient {
 	
 	//Unsubscribles
 	public List<Unsubscribe> getUnsubscribes(Unsubscribe.Get request) throws IOException, SendGridException {
-		return null;
+		String json = doRequest("/unsubscribes.get.json", request);
+		List<Map<String, Object>> list = JsonUtils.parseArray(json);
+		List<Unsubscribe> ret = new ArrayList<Unsubscribe>();
+		for (Map<String, Object> map : list) {
+			ret.add(new Unsubscribe(map));
+		}
+		return ret;
 	}
 	
 	public void deleteUnsubscribes(Unsubscribe.Delete request) throws IOException, SendGridException {
+		String json = doRequest("/unsubscribes.delete.json", request);
+		checkResponse(json);
 	}
 	
 	public void addUnsubscribes(Unsubscribe.Add request) throws IOException, SendGridException {
+		String json = doRequest("/unsubscribes.add.json", request);
+		checkResponse(json);
 	}
 }

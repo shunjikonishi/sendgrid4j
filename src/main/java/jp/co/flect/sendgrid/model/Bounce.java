@@ -35,19 +35,9 @@ public class Bounce extends AbstractModel {
 		
 		public Date getStartDate() { return doGetDate("start_date");}
 		public Date getEndDate() { return doGetDate("end_date");}
+		@Override
 		public void setStartAndEndDate(Date start, Date end) {
-			if (start == null && end == null) {
-				throw new IllegalArgumentException();
-			}
-			if (start != null && end != null && start.getTime() > end.getTime()) {
-				throw new IllegalArgumentException("Start date must be before the end date");
-			}
-			if (start != null) {
-				doSetDate("start_date", start);
-			}
-			if (end != null) {
-				doSetDate("end_date", end);
-			}
+			super.setStartAndEndDate(start, end);
 		}
 		
 		

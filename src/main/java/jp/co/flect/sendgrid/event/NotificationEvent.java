@@ -1,6 +1,6 @@
 package jp.co.flect.sendgrid.event;
 
-public enum Event {
+public enum NotificationEvent {
 	Processed,
 	Dropped,
 	Deferred,

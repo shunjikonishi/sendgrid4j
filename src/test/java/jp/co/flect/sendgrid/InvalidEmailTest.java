@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import jp.co.flect.sendgrid.model.InvalidEmail;
+import jp.co.flect.sendgrid.model.WebMail;
 
 import static jp.co.flect.sendgrid.SendGridTest.USERNAME;
 import static jp.co.flect.sendgrid.SendGridTest.PASSWORD;
@@ -53,4 +54,18 @@ public class InvalidEmailTest {
 		}
 	}
 	
+	@Test
+	public void delete() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		InvalidEmail.Delete request = new InvalidEmail.Delete("test@flect.co.jpx");
+		client.deleteInvalidEmails(request);
+		
+		WebMail mail = new WebMail();
+		mail.setFrom(MAIL_FROM);
+		mail.setTo("test@flect.co.jpx");
+		mail.setSubject("test");
+		mail.setText("test");
+		
+		client.mail(mail);
+	}
 }

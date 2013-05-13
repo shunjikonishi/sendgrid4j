@@ -65,6 +65,10 @@ public abstract class AbstractModel {
 		return o == null ? null : o.toString();
 	}
 	
+	protected void doSetString(String name, String value) {
+		this.map.put(name, value);
+	}
+	
 	protected List<String> doGetList(String name) {
 		Object o = this.map.get(name);
 		if (o == null) {
@@ -95,4 +99,5 @@ public abstract class AbstractModel {
 		}
 	}
 	
+	public Object get(String name) { return this.map.get(name);}
 }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.BeforeClass;
@@ -72,4 +73,35 @@ public class AppTest {
 		return b;
 	}
 	
+	@Test
+	public void whitelist() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		List<String> list = client.getAddressWhilteList();
+		assertEquals(2, list.size());
+		assertEquals("test@flect.co.jp", list.get(0));
+		assertEquals("hoge@flect.co.jp", list.get(1));
+		
+		client.setAddressWhiteList(Arrays.asList("test@flect.co.jp", "hoge@flect.co.jp", "fuga@flect.co.jp"));
+		list = client.getAddressWhilteList();
+		assertEquals(3, list.size());
+		assertEquals("test@flect.co.jp", list.get(0));
+		assertEquals("hoge@flect.co.jp", list.get(1));
+		assertEquals("fuga@flect.co.jp", list.get(2));
+		
+		client.setAddressWhiteList(Arrays.asList("test@flect.co.jp", "hoge@flect.co.jp"));
+	}
+	
+	@Test
+	public void bcc() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		String bcc = client.getBcc();
+		assertEquals(MAIL_FROM, bcc);
+		
+		client.setBcc(MAIL_TO);
+		bcc = client.getBcc();
+		assertEquals(MAIL_TO, bcc);
+		
+		client.setBcc(MAIL_FROM);
+	}
 }

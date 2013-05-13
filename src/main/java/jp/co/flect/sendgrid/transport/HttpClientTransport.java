@@ -70,7 +70,11 @@ System.out.println(body);
 		List<NameValuePair> list = new ArrayList<NameValuePair>();
 		for (Map.Entry<String, String[]> entry : params.entrySet()) {
 			String key = entry.getKey();
+			if (entry.getValue().length > 1) {
+				key += "[]";
+			}
 			for (String s : entry.getValue()) {
+System.out.println("SimpleSend: " + key  + " = " + s);
 				list.add(new BasicNameValuePair(key, s));
 			}
 		}

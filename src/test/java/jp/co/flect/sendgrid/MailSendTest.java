@@ -34,9 +34,8 @@ public class MailSendTest {
 		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
 		WebMail mail = new WebMail();
 		mail.setFrom(MAIL_FROM);
-		mail.setTo(MAIL_TO);
+		mail.setToList(Arrays.asList(MAIL_TO, MAIL_FROM));
 		mail.setFromName("テスト From");
-		mail.setToName("テスト To");
 		mail.setSubject("テストメール: " + now);
 		mail.setText("てすと\nてすと");
 		mail.setHtml("<div>ほげ<br>ふが</div>");

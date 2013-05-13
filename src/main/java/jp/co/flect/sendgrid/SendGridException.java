@@ -16,7 +16,7 @@ public class SendGridException extends Exception {
 		if (msg instanceof List) {
 			return ((List)msg).get(0).toString();
 		}
-		throw new IllegalArgumentException(map.toString());
+		return map.toString();
 	}
 	
 	private List<String> msgs;

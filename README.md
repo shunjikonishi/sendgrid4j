@@ -74,8 +74,8 @@ Get statistics
             "");
     }
 
-Each classes are the simple wrapper of WebAPI parameters or response JSON.  
-Please see the SendGrid WebAPI documentation to know the meaning of each properties.
+Each class is a simple wrapper of WebAPI parameters or a JSON response.  
+Please see the SendGrid WebAPI documentation for details of each property.
 
 http://sendgrid.com/docs/API_Reference/Web_API/index.html
 

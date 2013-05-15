@@ -1,6 +1,5 @@
 sendgrid4j
-----------
-----------
+==========
 
 Overview
 --------
@@ -75,12 +74,12 @@ Get statistics
             "");
     }
 
-Each classes are the simple wrapper of WebAPI parameters or response JSON. 
+Each classes are the simple wrapper of WebAPI parameters or response JSON.  
 Please see the SendGrid WebAPI documentation to know the meaning of each properties.
 
 http://sendgrid.com/docs/API_Reference/Web_API/index.html
 
-All methods are called from SendGridClient class, 
+All methods are called from SendGridClient class,  
 so you can understand what this can do by seeing [SendGridClient.java](https://github.com/shunjikonishi/sendgrid4j/blob/master/src/main/java/jp/co/flect/sendgrid/SendGridClient.java).
 
 License

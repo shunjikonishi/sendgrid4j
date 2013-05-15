@@ -6,10 +6,6 @@ Overview
 --------
 Simple SendGrid client for Java
 
-License
--------
-MIT
-
 Dependency
 ----------
 This library requires following jars.
@@ -79,9 +75,13 @@ Get statistics
             "");
     }
 
-Each classes are the simple wrapper of WebAPI parameters and response JSON.
+Each classes are the simple wrapper of WebAPI parameters or response JSON.
+
 Please see the SendGrid WebAPI documentation to know the meaning of each properties.
 
 http://sendgrid.com/docs/API_Reference/Web_API/index.html
 
+License
+-------
+MIT
 

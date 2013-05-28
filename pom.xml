@@ -10,10 +10,11 @@
 	<packaging>jar</packaging>
 
 	<name>sendgrid4j</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/shunjikonishi/sendgrid4j</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<github.global.server>github</github.global.server>
 	</properties>
 	
 	<dependencies>
@@ -56,7 +57,69 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4.3</version>
+				<executions>
+					<execution>
+					<id>copy-resources</id>
+					<phase>deploy</phase>
+					<goals>
+						<goal>copy-resources</goal>
+					</goals>
+					<configuration>
+						<outputDirectory>dist</outputDirectory>
+						<resources>
+							<resource>
+								<directory>target</directory>
+								<includes>
+									<include>*.jar</include>
+								</includes>
+							</resource>
+						</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.7</version>
+				<configuration>
+					<message>Maven artifacts for ${project.artifactId}-${project.version}</message>
+					<noJekyll>true</noJekyll>
+					<outputDirectory>${env.MAVEN_LOCAL_REPOSITORY}</outputDirectory>
+					<branch>refs/heads/gh-pages</branch>
+					<includes>
+						<include>**/*</include>
+					</includes>
+					<repositoryName>maven-repo</repositoryName>
+					<repositoryOwner>flect</repositoryOwner>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>deploy</phase>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.mylyn.github</groupId>
+						<artifactId>org.eclipse.egit.github.core</artifactId>
+						<version>2.0.3</version>
+					</dependency>                        
+				</dependencies> 
+			</plugin>
 		</plugins>
 	</build>
+	<distributionManagement>
+		<repository>
+			<id>local.repo</id>
+			<name>My Repository</name>
+			<url>file://${env.MAVEN_LOCAL_REPOSITORY}</url>
+		</repository>
+	</distributionManagement>
 </project>
 

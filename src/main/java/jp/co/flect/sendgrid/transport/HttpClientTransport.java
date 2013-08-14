@@ -38,7 +38,6 @@ public class HttpClientTransport implements Transport {
 	
 	private String handleResponse(HttpResponse res) throws IOException, SendGridException {
 		String body = EntityUtils.toString(res.getEntity(), "utf-8");
-System.out.println(body);
 		
 		if (res.getStatusLine().getStatusCode() != 200) {
 			if (body != null && body.length() > 0 && body.charAt(0) == '{') {
@@ -74,7 +73,6 @@ System.out.println(body);
 				key += "[]";
 			}
 			for (String s : entry.getValue()) {
-System.out.println("SimpleSend: " + key  + " = " + s);
 				list.add(new BasicNameValuePair(key, s));
 			}
 		}
@@ -82,7 +80,6 @@ System.out.println("SimpleSend: " + key  + " = " + s);
 		method.setEntity(new UrlEncodedFormEntity(list, "utf-8"));
 		
 		HttpResponse res = client.execute(method);
-System.out.println("execute " + url + ": " + res.getStatusLine());
 		return handleResponse(res);
 	}
 	
@@ -103,7 +100,6 @@ System.out.println("execute " + url + ": " + res.getStatusLine());
 		}
 		method.setEntity(entity);
 		HttpResponse res = client.execute(method);
-System.out.println("execute " + url + ": " + res.getStatusLine());
 		return handleResponse(res);
 	}
 	

@@ -13,6 +13,10 @@ This library requires following jars.
 - HttpComponents(http://hc.apache.org/)
 - Google gson(https://code.google.com/p/google-gson/)
 
+JavaDoc
+-------
+http://oss.flect.co.jp/apidocs/sendgrid4j/index.html
+
 Usage
 -----
 Send mail

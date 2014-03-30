@@ -1,27 +1,29 @@
 package jp.co.flect.sendgrid;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import jp.co.flect.sendgrid.transport.Transport;
-import jp.co.flect.sendgrid.transport.TransportUtils;
-import jp.co.flect.sendgrid.transport.HttpClientTransport;
+import jp.co.flect.sendgrid.filter.DomainKeys;
+import jp.co.flect.sendgrid.filter.EventNotify;
+import jp.co.flect.sendgrid.json.JsonUtils;
 import jp.co.flect.sendgrid.model.AbstractRequest;
-import jp.co.flect.sendgrid.model.CommonRequest;
 import jp.co.flect.sendgrid.model.App;
 import jp.co.flect.sendgrid.model.Block;
 import jp.co.flect.sendgrid.model.Bounce;
-import jp.co.flect.sendgrid.model.WebMail;
+import jp.co.flect.sendgrid.model.CommonRequest;
 import jp.co.flect.sendgrid.model.InvalidEmail;
 import jp.co.flect.sendgrid.model.Profile;
 import jp.co.flect.sendgrid.model.SpamReport;
 import jp.co.flect.sendgrid.model.Statistic;
 import jp.co.flect.sendgrid.model.Unsubscribe;
-import jp.co.flect.sendgrid.json.JsonUtils;
+import jp.co.flect.sendgrid.model.WebMail;
+import jp.co.flect.sendgrid.transport.HttpClientTransport;
+import jp.co.flect.sendgrid.transport.Transport;
+import jp.co.flect.sendgrid.transport.TransportUtils;
 
 public class SendGridClient {
 	
@@ -191,6 +193,65 @@ public class SendGridClient {
 		Map<String, Object> settings = new HashMap<String, Object>();
 		settings.put("email", bcc);
 		App app = new App("bcc", settings);
+		setupApp(app);
+	}
+	
+	public boolean getClickTrack() throws IOException, SendGridException {
+		App app = getAppSettings("clicktrack");
+		return app.getSettingAsString("enable_text").equals("null") ? false : true;
+	}
+	
+	public void setClickTrack(boolean isEnableText) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("enable_text", isEnableText ? "1" : "null");
+		App app = new App("clicktrack", settings);
+		setupApp(app);
+	}
+	
+	public DomainKeys getDomainKeys() throws IOException, SendGridException {
+		App app = getAppSettings("domainkeys");
+		return new DomainKeys(
+				app.getSettingAsString("domain"),
+				(int)app.getSettingAsDouble("sender") == 0 ? false : true);
+	}
+	
+	public void setDomainKeys(DomainKeys domainKeys) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("domain", domainKeys.getDomain());
+		settings.put("sender", domainKeys.isInsertSender() ? "1" : "0");
+		App app = new App("domainkeys", settings);
+		setupApp(app);
+	}
+	
+	public EventNotify getEventNotify() throws IOException, SendGridException {
+		App app = getAppSettings("eventnotify");
+		return new EventNotify(
+				app.getSettingAsString("processed").equals("0") ? false : true,
+				app.getSettingAsString("dropped").equals("0") ? false : true,
+				app.getSettingAsString("deferred").equals("0") ? false : true,
+				app.getSettingAsString("delivered").equals("0") ? false : true,
+				app.getSettingAsString("bounce").equals("0") ? false : true,
+				app.getSettingAsString("click").equals("0") ? false : true,
+				app.getSettingAsString("open").equals("0") ? false : true,
+				app.getSettingAsString("unsubscribe").equals("0") ? false : true,
+				app.getSettingAsString("spamreport").equals("0") ? false : true,
+				app.getSettingAsString("url"));
+	}
+	
+	public void setEventNotify(EventNotify eventNotify) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("processed", eventNotify.isEnableProcessed() ? "1" : "0");
+		settings.put("dropped", eventNotify.isEnableDropped() ? "1" : "0");
+		settings.put("deferred", eventNotify.isEnableDeferred() ? "1" : "0");
+		settings.put("delivered", eventNotify.isEnableDelivered() ? "1" : "0");
+		settings.put("bounce", eventNotify.isEnableBounce() ? "1" : "0");
+		settings.put("click", eventNotify.isEnableClick() ? "1" : "0");
+		settings.put("open", eventNotify.isEnableOpen() ? "1" : "0");
+		settings.put("unsubscribe", eventNotify.isEnableUnsubscribe() ? "1" : "0");
+		settings.put("spamreport", eventNotify.isEnableSpamreport() ? "1" : "0");
+		settings.put("url", eventNotify.getUrl());
+		settings.put("version", eventNotify.getVersion());
+		App app = new App("eventnotify", settings);
 		setupApp(app);
 	}
 	

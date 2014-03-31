@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.co.flect.sendgrid.filter.Dkim;
 import jp.co.flect.sendgrid.filter.DomainKeys;
 import jp.co.flect.sendgrid.filter.EventNotify;
 import jp.co.flect.sendgrid.json.JsonUtils;
@@ -220,6 +221,21 @@ public class SendGridClient {
 		settings.put("domain", domainKeys.getDomain());
 		settings.put("sender", domainKeys.isEnableInsertSender() ? "1" : "0");
 		App app = new App("domainkeys", settings);
+		setupApp(app);
+	}
+	
+	public Dkim getDkim() throws IOException, SendGridException {
+		App app = getAppSettings("dkim");
+		return new Dkim(
+				app.getSettingAsString("domain"),
+				(int)app.getSettingAsDouble("use_from") == 0 ? false : true);
+	}
+	
+	public void setDkim(Dkim dkim) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("domain", dkim.getDomain());
+		settings.put("use_from", dkim.isEnableUseFrom() ? "1" : "0");
+		App app = new App("dkim", settings);
 		setupApp(app);
 	}
 	

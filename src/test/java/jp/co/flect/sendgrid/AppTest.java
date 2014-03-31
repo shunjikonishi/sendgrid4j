@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
+import jp.co.flect.sendgrid.filter.Dkim;
 import jp.co.flect.sendgrid.filter.DomainKeys;
 import jp.co.flect.sendgrid.filter.EventNotify;
 import jp.co.flect.sendgrid.model.App;
@@ -129,6 +130,25 @@ public class AppTest {
 		assertEquals(true, domainKeys.isEnableInsertSender());
 	}
 	
+	@Test
+	public void dkim() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		Dkim dkim = new Dkim(
+				"google.com", false);
+		client.setDkim(dkim);
+		dkim = client.getDkim();
+		assertEquals("google.com", dkim.getDomain());
+		assertEquals(false, dkim.isEnableUseFrom());
+		
+		dkim = new Dkim(
+				"yahoo.com", true);
+		client.setDkim(dkim);
+		dkim = client.getDkim();
+		assertEquals("yahoo.com", dkim.getDomain());
+		assertEquals(true, dkim.isEnableUseFrom());
+	}
+
 	@Test
 	public void eventnotify() throws Exception {
 		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);

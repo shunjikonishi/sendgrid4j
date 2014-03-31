@@ -218,7 +218,7 @@ public class SendGridClient {
 	public void setDomainKeys(DomainKeys domainKeys) throws IOException, SendGridException {
 		Map<String, Object> settings = new HashMap<String, Object>();
 		settings.put("domain", domainKeys.getDomain());
-		settings.put("sender", domainKeys.isInsertSender() ? "1" : "0");
+		settings.put("sender", domainKeys.isEnableInsertSender() ? "1" : "0");
 		App app = new App("domainkeys", settings);
 		setupApp(app);
 	}

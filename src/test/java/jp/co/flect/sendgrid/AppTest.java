@@ -119,14 +119,14 @@ public class AppTest {
 		client.setDomainKeys(domainKeys);
 		domainKeys = client.getDomainKeys();
 		assertEquals("google.com", domainKeys.getDomain());
-		assertEquals(false, domainKeys.isInsertSender());
+		assertEquals(false, domainKeys.isEnableInsertSender());
 		
 		domainKeys = new DomainKeys(
 				"yahoo.com", true);
 		client.setDomainKeys(domainKeys);
 		domainKeys = client.getDomainKeys();
 		assertEquals("yahoo.com", domainKeys.getDomain());
-		assertEquals(true, domainKeys.isInsertSender());
+		assertEquals(true, domainKeys.isEnableInsertSender());
 	}
 	
 	@Test

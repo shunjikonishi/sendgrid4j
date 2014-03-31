@@ -15,7 +15,7 @@ public class DomainKeys {
 
 	private boolean enableInsertSender;
 
-	public boolean isInsertSender() {
+	public boolean isEnableInsertSender() {
 		return enableInsertSender;
 	}
 }

@@ -15,6 +15,7 @@ import java.util.List;
 import jp.co.flect.sendgrid.filter.Dkim;
 import jp.co.flect.sendgrid.filter.DomainKeys;
 import jp.co.flect.sendgrid.filter.EventNotify;
+import jp.co.flect.sendgrid.filter.Footer;
 import jp.co.flect.sendgrid.model.App;
 
 import org.junit.Test;
@@ -186,5 +187,17 @@ public class AppTest {
 		assertEquals(true, eventNotify.isEnableSpamreport());
 		assertEquals("https://www.yahoo.com/", eventNotify.getUrl());
 		assertEquals(3, eventNotify.getVersion());
+	}
+	
+	@Test
+	public void footer() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		Footer footer = new Footer(
+				"<div>フッタ</div>", "フッタ");
+		client.setFooter(footer);
+		footer = client.getFooter();
+		assertEquals("<div>フッタ</div>", footer.getTextHtml());
+		assertEquals("フッタ", footer.getTextPlain());
 	}
 }

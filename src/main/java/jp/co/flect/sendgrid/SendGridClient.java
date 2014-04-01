@@ -10,6 +10,7 @@ import java.util.Map;
 import jp.co.flect.sendgrid.filter.Dkim;
 import jp.co.flect.sendgrid.filter.DomainKeys;
 import jp.co.flect.sendgrid.filter.EventNotify;
+import jp.co.flect.sendgrid.filter.Footer;
 import jp.co.flect.sendgrid.json.JsonUtils;
 import jp.co.flect.sendgrid.model.AbstractRequest;
 import jp.co.flect.sendgrid.model.App;
@@ -271,6 +272,21 @@ public class SendGridClient {
 		setupApp(app);
 	}
 	
+	public Footer getFooter() throws IOException, SendGridException {
+		App app = getAppSettings("footer");
+		return new Footer(
+				app.getSettingAsString("text_html"),
+				app.getSettingAsString("text_plain"));
+	}
+	
+	public void setFooter(Footer footer) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("text/html", footer.getTextHtml());
+		settings.put("text/plain", footer.getTextPlain());
+		App app = new App("footer", settings);
+		setupApp(app);
+	}
+
 	//InvalidEmails
 	public List<InvalidEmail> getInvalidEmails(InvalidEmail.Get request) throws IOException, SendGridException {
 		String json = doRequest("/invalidemails.get.json", request);

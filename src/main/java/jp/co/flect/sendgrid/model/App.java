@@ -39,4 +39,5 @@ public class App extends AbstractModel {
 	public int getSettingAsInt(String name) { return (Integer)this.settings.get(name);}
 	public boolean getSettingAsBoolean(String name) { return (Boolean)this.settings.get(name);}
 	public List<String> getSettingAsList(String name) { return (List<String>)this.settings.get(name);}
+	public double getSettingAsDouble(String name) {return (Double)this.settings.get(name);}
 }

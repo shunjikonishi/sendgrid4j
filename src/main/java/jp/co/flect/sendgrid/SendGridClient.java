@@ -11,6 +11,7 @@ import jp.co.flect.sendgrid.filter.Dkim;
 import jp.co.flect.sendgrid.filter.DomainKeys;
 import jp.co.flect.sendgrid.filter.EventNotify;
 import jp.co.flect.sendgrid.filter.Footer;
+import jp.co.flect.sendgrid.filter.GoogleAnalytics;
 import jp.co.flect.sendgrid.json.JsonUtils;
 import jp.co.flect.sendgrid.model.AbstractRequest;
 import jp.co.flect.sendgrid.model.App;
@@ -284,6 +285,27 @@ public class SendGridClient {
 		settings.put("text/html", footer.getTextHtml());
 		settings.put("text/plain", footer.getTextPlain());
 		App app = new App("footer", settings);
+		setupApp(app);
+	}
+
+	public GoogleAnalytics getGoogleAnalytics() throws IOException, SendGridException {
+		App app = getAppSettings("ganalytics");
+		return new GoogleAnalytics(
+				app.getSettingAsString("utm_source"),
+				app.getSettingAsString("utm_medium"),
+				app.getSettingAsString("utm_campaign"),
+				app.getSettingAsString("utm_term"),
+				app.getSettingAsString("utm_content"));
+	}
+	
+	public void setGoogleAnalytics(GoogleAnalytics ganalytics) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("utm_source", ganalytics.getUtmSource());
+		settings.put("utm_medium", ganalytics.getUtmMedium());
+		settings.put("utm_campaign", ganalytics.getUtmCampaign());
+		settings.put("utm_term", ganalytics.getUtmTerm());
+		settings.put("utm_content", ganalytics.getUtmContent());
+		App app = new App("ganalytics", settings);
 		setupApp(app);
 	}
 

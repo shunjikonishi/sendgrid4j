@@ -16,6 +16,7 @@ import jp.co.flect.sendgrid.filter.Dkim;
 import jp.co.flect.sendgrid.filter.DomainKeys;
 import jp.co.flect.sendgrid.filter.EventNotify;
 import jp.co.flect.sendgrid.filter.Footer;
+import jp.co.flect.sendgrid.filter.GoogleAnalytics;
 import jp.co.flect.sendgrid.model.App;
 
 import org.junit.Test;
@@ -200,4 +201,20 @@ public class AppTest {
 		assertEquals("<div>フッタ</div>", footer.getTextHtml());
 		assertEquals("フッタ", footer.getTextPlain());
 	}
+	
+	@Test
+	public void ganalytics() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		GoogleAnalytics ganalytics = new GoogleAnalytics(
+				"Transactional Email", "email", "Redesigned Transaction", "Health", "PageB");
+		client.setGoogleAnalytics(ganalytics);
+		ganalytics = client.getGoogleAnalytics();
+		assertEquals("Transactional Email", ganalytics.getUtmSource());
+		assertEquals("email", ganalytics.getUtmMedium());
+		assertEquals("Redesigned Transaction", ganalytics.getUtmCampaign());
+		assertEquals("Health", ganalytics.getUtmTerm());
+		assertEquals("PageB", ganalytics.getUtmContent());
+	}
+	
 }

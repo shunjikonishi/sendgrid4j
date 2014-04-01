@@ -17,6 +17,7 @@ import jp.co.flect.sendgrid.filter.DomainKeys;
 import jp.co.flect.sendgrid.filter.EventNotify;
 import jp.co.flect.sendgrid.filter.Footer;
 import jp.co.flect.sendgrid.filter.GoogleAnalytics;
+import jp.co.flect.sendgrid.filter.SpamCheck;
 import jp.co.flect.sendgrid.model.App;
 
 import org.junit.Test;
@@ -217,4 +218,20 @@ public class AppTest {
 		assertEquals("PageB", ganalytics.getUtmContent());
 	}
 	
+	@Test
+	public void spamcheck() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		SpamCheck spamCheck = new SpamCheck("1.2", "");
+		client.setSpamCheck(spamCheck);
+		spamCheck = client.getSpamCheck();
+		assertEquals("1.2", spamCheck.getMaxScore());
+		assertEquals("", spamCheck.getUrl());
+		
+		spamCheck = new SpamCheck("0.0", "http://www.google.com/");
+		client.setSpamCheck(spamCheck);
+		spamCheck = client.getSpamCheck();
+		assertEquals("0.0", spamCheck.getMaxScore());
+		assertEquals("http://www.google.com/", spamCheck.getUrl());
+	}
 }

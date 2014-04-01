@@ -12,6 +12,7 @@ import jp.co.flect.sendgrid.filter.DomainKeys;
 import jp.co.flect.sendgrid.filter.EventNotify;
 import jp.co.flect.sendgrid.filter.Footer;
 import jp.co.flect.sendgrid.filter.GoogleAnalytics;
+import jp.co.flect.sendgrid.filter.SpamCheck;
 import jp.co.flect.sendgrid.json.JsonUtils;
 import jp.co.flect.sendgrid.model.AbstractRequest;
 import jp.co.flect.sendgrid.model.App;
@@ -306,6 +307,21 @@ public class SendGridClient {
 		settings.put("utm_term", ganalytics.getUtmTerm());
 		settings.put("utm_content", ganalytics.getUtmContent());
 		App app = new App("ganalytics", settings);
+		setupApp(app);
+	}
+
+	public SpamCheck getSpamCheck() throws IOException, SendGridException {
+		App app = getAppSettings("spamcheck");
+		return new SpamCheck(
+				app.getSettingAsString("max_score"),
+				app.getSettingAsString("url"));
+	}
+	
+	public void setSpamCheck(SpamCheck spamCheck) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("max_score", spamCheck.getMaxScore());
+		settings.put("url", spamCheck.getUrl());
+		App app = new App("spamcheck", settings);
 		setupApp(app);
 	}
 

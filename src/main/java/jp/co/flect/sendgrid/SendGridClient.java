@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.co.flect.sendgrid.filter.DomainKeys;
-import jp.co.flect.sendgrid.filter.EventNotify;
 import jp.co.flect.sendgrid.json.JsonUtils;
 import jp.co.flect.sendgrid.model.AbstractRequest;
 import jp.co.flect.sendgrid.model.App;
@@ -21,6 +19,8 @@ import jp.co.flect.sendgrid.model.SpamReport;
 import jp.co.flect.sendgrid.model.Statistic;
 import jp.co.flect.sendgrid.model.Unsubscribe;
 import jp.co.flect.sendgrid.model.WebMail;
+import jp.co.flect.sendgrid.model.apps.DomainKeys;
+import jp.co.flect.sendgrid.model.apps.EventNotify;
 import jp.co.flect.sendgrid.transport.HttpClientTransport;
 import jp.co.flect.sendgrid.transport.Transport;
 import jp.co.flect.sendgrid.transport.TransportUtils;
@@ -198,7 +198,8 @@ public class SendGridClient {
 	
 	public boolean getClickTrack() throws IOException, SendGridException {
 		App app = getAppSettings("clicktrack");
-		return app.getSettingAsString("enable_text").equals("null") ? false : true;
+		String ret = app.getSettingAsString("enable_text");
+		return ret != null && ret.equals("1") ? true : false;
 	}
 	
 	public void setClickTrack(boolean isEnableText) throws IOException, SendGridException {
@@ -210,48 +211,21 @@ public class SendGridClient {
 	
 	public DomainKeys getDomainKeys() throws IOException, SendGridException {
 		App app = getAppSettings("domainkeys");
-		return new DomainKeys(
-				app.getSettingAsString("domain"),
-				(int)app.getSettingAsDouble("sender") == 0 ? false : true);
+		return new DomainKeys(app);
 	}
 	
 	public void setDomainKeys(DomainKeys domainKeys) throws IOException, SendGridException {
-		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put("domain", domainKeys.getDomain());
-		settings.put("sender", domainKeys.isEnableInsertSender() ? "1" : "0");
-		App app = new App("domainkeys", settings);
+		App app = new App("domainkeys", domainKeys.getSettings());
 		setupApp(app);
 	}
 	
 	public EventNotify getEventNotify() throws IOException, SendGridException {
 		App app = getAppSettings("eventnotify");
-		return new EventNotify(
-				app.getSettingAsString("processed").equals("0") ? false : true,
-				app.getSettingAsString("dropped").equals("0") ? false : true,
-				app.getSettingAsString("deferred").equals("0") ? false : true,
-				app.getSettingAsString("delivered").equals("0") ? false : true,
-				app.getSettingAsString("bounce").equals("0") ? false : true,
-				app.getSettingAsString("click").equals("0") ? false : true,
-				app.getSettingAsString("open").equals("0") ? false : true,
-				app.getSettingAsString("unsubscribe").equals("0") ? false : true,
-				app.getSettingAsString("spamreport").equals("0") ? false : true,
-				app.getSettingAsString("url"));
+		return new EventNotify(app);
 	}
 	
 	public void setEventNotify(EventNotify eventNotify) throws IOException, SendGridException {
-		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put("processed", eventNotify.isEnableProcessed() ? "1" : "0");
-		settings.put("dropped", eventNotify.isEnableDropped() ? "1" : "0");
-		settings.put("deferred", eventNotify.isEnableDeferred() ? "1" : "0");
-		settings.put("delivered", eventNotify.isEnableDelivered() ? "1" : "0");
-		settings.put("bounce", eventNotify.isEnableBounce() ? "1" : "0");
-		settings.put("click", eventNotify.isEnableClick() ? "1" : "0");
-		settings.put("open", eventNotify.isEnableOpen() ? "1" : "0");
-		settings.put("unsubscribe", eventNotify.isEnableUnsubscribe() ? "1" : "0");
-		settings.put("spamreport", eventNotify.isEnableSpamreport() ? "1" : "0");
-		settings.put("url", eventNotify.getUrl());
-		settings.put("version", eventNotify.getVersion());
-		App app = new App("eventnotify", settings);
+		App app = new App("eventnotify", eventNotify.getSettings());
 		setupApp(app);
 	}
 	

@@ -1,32 +1,22 @@
 package jp.co.flect.sendgrid;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import org.junit.Test;
-import org.junit.BeforeClass;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Date;
-import java.util.Map;
-import java.util.HashMap;
-
-import jp.co.flect.sendgrid.model.App;
-
-import static jp.co.flect.sendgrid.SendGridTest.USERNAME;
-import static jp.co.flect.sendgrid.SendGridTest.PASSWORD;
 import static jp.co.flect.sendgrid.SendGridTest.MAIL_FROM;
 import static jp.co.flect.sendgrid.SendGridTest.MAIL_TO;
-import static jp.co.flect.sendgrid.SendGridTest.BOUNCE_FROM;
-import static jp.co.flect.sendgrid.SendGridTest.BOUNCE_TO;
+import static jp.co.flect.sendgrid.SendGridTest.PASSWORD;
+import static jp.co.flect.sendgrid.SendGridTest.USERNAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.List;
+
+import jp.co.flect.sendgrid.model.App;
+import jp.co.flect.sendgrid.model.apps.DomainKeys;
+import jp.co.flect.sendgrid.model.apps.EventNotify;
+
+import org.junit.Test;
 
 public class AppTest {
 	
@@ -103,5 +93,120 @@ public class AppTest {
 		assertEquals(MAIL_TO, bcc);
 		
 		client.setBcc(MAIL_FROM);
+	}
+	
+	@Test
+	public void clicktrack() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		boolean isEnableText = client.getClickTrack();
+
+		client.setClickTrack(true);
+		isEnableText = client.getClickTrack();
+		assertEquals(true, isEnableText);
+
+		client.setClickTrack(false);
+		isEnableText = client.getClickTrack();
+		assertEquals(false, isEnableText);
+	}
+	
+	@Test
+	public void domainkeys() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		DomainKeys domainKeys = new DomainKeys();
+		domainKeys.setDomain("google.com");
+		domainKeys.setEnableInsertSender(false);
+		client.setDomainKeys(domainKeys);
+		domainKeys = client.getDomainKeys();
+		assertEquals("google.com", domainKeys.getDomain());
+		assertEquals(false, domainKeys.isEnableInsertSender());
+		
+		domainKeys = new DomainKeys();
+		domainKeys.setDomain("yahoo.com");
+		domainKeys.setEnableInsertSender(true);
+		client.setDomainKeys(domainKeys);
+		domainKeys = client.getDomainKeys();
+		assertEquals("yahoo.com", domainKeys.getDomain());
+		assertEquals(true, domainKeys.isEnableInsertSender());
+	}
+	
+	@Test(expected=SendGridException.class)
+	public void domainkeysEmptyDomain() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		// TODO This implement does not support Empty domain yet.
+		DomainKeys domainKeys = new DomainKeys();
+		domainKeys.setEnableInsertSender(true);
+		client.setDomainKeys(domainKeys);
+	}
+	
+	@Test
+	public void eventnotify() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		EventNotify eventNotify = new EventNotify();
+		eventNotify.setEnableProcessed(false);
+		eventNotify.setEnableDropped(true);
+		eventNotify.setEnableDeferred(false);
+		eventNotify.setEnableDelivered(true);
+		eventNotify.setEnableBounce(false);
+		eventNotify.setEnableClick(true);
+		eventNotify.setEnableOpen(false);
+		eventNotify.setEnableUnsubscribe(true);
+		eventNotify.setEnableSpamreport(false);
+		eventNotify.setUrl("http://www.google.com/");
+
+		client.setEventNotify(eventNotify);
+		eventNotify = client.getEventNotify();
+		assertEquals(false, eventNotify.isEnableProcessed());
+		assertEquals(true, eventNotify.isEnableDropped());
+		assertEquals(false, eventNotify.isEnableDeferred());
+		assertEquals(true, eventNotify.isEnableDelivered());
+		assertEquals(false, eventNotify.isEnableBounce());
+		assertEquals(true, eventNotify.isEnableClick());
+		assertEquals(false, eventNotify.isEnableOpen());
+		assertEquals(true, eventNotify.isEnableUnsubscribe());
+		assertEquals(false, eventNotify.isEnableSpamreport());
+		assertEquals("http://www.google.com/", eventNotify.getUrl());
+		assertEquals(3, eventNotify.getVersion());
+		
+		eventNotify.setEnableProcessed(true);
+		eventNotify.setEnableDropped(false);
+		eventNotify.setEnableDeferred(true);
+		eventNotify.setEnableDelivered(false);
+		eventNotify.setEnableBounce(true);
+		eventNotify.setEnableClick(false);
+		eventNotify.setEnableOpen(true);
+		eventNotify.setEnableUnsubscribe(false);
+		eventNotify.setEnableSpamreport(true);
+		eventNotify.setUrl("https://www.yahoo.com/");
+		eventNotify.setVersion(1);
+
+		client.setEventNotify(eventNotify);
+		eventNotify = client.getEventNotify();
+		assertEquals(true, eventNotify.isEnableProcessed());
+		assertEquals(false, eventNotify.isEnableDropped());
+		assertEquals(true, eventNotify.isEnableDeferred());
+		assertEquals(false, eventNotify.isEnableDelivered());
+		assertEquals(true, eventNotify.isEnableBounce());
+		assertEquals(false, eventNotify.isEnableClick());
+		assertEquals(true, eventNotify.isEnableOpen());
+		assertEquals(false, eventNotify.isEnableUnsubscribe());
+		assertEquals(true, eventNotify.isEnableSpamreport());
+		assertEquals("https://www.yahoo.com/", eventNotify.getUrl());
+		assertEquals(1, eventNotify.getVersion());
+		
+		eventNotify.setVersion(3);
+		client.setEventNotify(eventNotify);
+		eventNotify = client.getEventNotify();
+		assertEquals(3, eventNotify.getVersion());
+		
+	}
+	
+	@Test(expected=SendGridException.class)
+	public void eventnotifyEmptyUrl() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		EventNotify eventNotify = new EventNotify();
+		client.setEventNotify(eventNotify);
 	}
 }

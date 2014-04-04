@@ -1,27 +1,29 @@
 package jp.co.flect.sendgrid;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import jp.co.flect.sendgrid.transport.Transport;
-import jp.co.flect.sendgrid.transport.TransportUtils;
-import jp.co.flect.sendgrid.transport.HttpClientTransport;
+import jp.co.flect.sendgrid.json.JsonUtils;
 import jp.co.flect.sendgrid.model.AbstractRequest;
-import jp.co.flect.sendgrid.model.CommonRequest;
 import jp.co.flect.sendgrid.model.App;
 import jp.co.flect.sendgrid.model.Block;
 import jp.co.flect.sendgrid.model.Bounce;
-import jp.co.flect.sendgrid.model.WebMail;
+import jp.co.flect.sendgrid.model.CommonRequest;
 import jp.co.flect.sendgrid.model.InvalidEmail;
 import jp.co.flect.sendgrid.model.Profile;
 import jp.co.flect.sendgrid.model.SpamReport;
 import jp.co.flect.sendgrid.model.Statistic;
 import jp.co.flect.sendgrid.model.Unsubscribe;
-import jp.co.flect.sendgrid.json.JsonUtils;
+import jp.co.flect.sendgrid.model.WebMail;
+import jp.co.flect.sendgrid.model.apps.DomainKeys;
+import jp.co.flect.sendgrid.model.apps.EventNotify;
+import jp.co.flect.sendgrid.transport.HttpClientTransport;
+import jp.co.flect.sendgrid.transport.Transport;
+import jp.co.flect.sendgrid.transport.TransportUtils;
 
 public class SendGridClient {
 	
@@ -191,6 +193,39 @@ public class SendGridClient {
 		Map<String, Object> settings = new HashMap<String, Object>();
 		settings.put("email", bcc);
 		App app = new App("bcc", settings);
+		setupApp(app);
+	}
+	
+	public boolean getClickTrack() throws IOException, SendGridException {
+		App app = getAppSettings("clicktrack");
+		String ret = app.getSettingAsString("enable_text");
+		return ret != null && ret.equals("1") ? true : false;
+	}
+	
+	public void setClickTrack(boolean isEnableText) throws IOException, SendGridException {
+		Map<String, Object> settings = new HashMap<String, Object>();
+		settings.put("enable_text", isEnableText ? "1" : "null");
+		App app = new App("clicktrack", settings);
+		setupApp(app);
+	}
+	
+	public DomainKeys getDomainKeys() throws IOException, SendGridException {
+		App app = getAppSettings("domainkeys");
+		return new DomainKeys(app);
+	}
+	
+	public void setDomainKeys(DomainKeys domainKeys) throws IOException, SendGridException {
+		App app = new App("domainkeys", domainKeys.getSettings());
+		setupApp(app);
+	}
+	
+	public EventNotify getEventNotify() throws IOException, SendGridException {
+		App app = getAppSettings("eventnotify");
+		return new EventNotify(app);
+	}
+	
+	public void setEventNotify(EventNotify eventNotify) throws IOException, SendGridException {
+		App app = new App("eventnotify", eventNotify.getSettings());
 		setupApp(app);
 	}
 	

@@ -28,7 +28,7 @@ import static jp.co.flect.sendgrid.SendGridTest.MAIL_TO;
 public class UnsubscribeTest {
 	
 	@Test
-	public void statistics() throws Exception {
+	public void unsubscribes1() throws Exception {
 		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
 		Unsubscribe.Get request = new Unsubscribe.Get();
 		
@@ -36,8 +36,28 @@ public class UnsubscribeTest {
 		assertEquals(1, list.size());
 		assertEquals("test@flect.co.jp", list.get(0).getEmail());
 		
-		client.deleteUnsubscribes(new Unsubscribe.Delete());
+		Unsubscribe.Delete delRequest = new Unsubscribe.Delete();
+		delRequest.setDeleteAll(true);
+		client.deleteUnsubscribes(delRequest);
 		client.addUnsubscribes(new Unsubscribe.Add("test@flect.co.jp"));
+	}
+	
+	public void unsubscribes2() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		Unsubscribe.Delete delRequest = new Unsubscribe.Delete();
+		delRequest.setEmail("test@flect.co.jp");
+		client.deleteUnsubscribes(delRequest);
+
+		Unsubscribe.Get request = new Unsubscribe.Get();
+		List<Unsubscribe> list = client.getUnsubscribes(request);
+		assertEquals(0, list.size());
+
+		client.addUnsubscribes(new Unsubscribe.Add("test@flect.co.jp"));
+		
+		list = client.getUnsubscribes(request);
+		assertEquals(1, list.size());
+		assertEquals("test@flect.co.jp", list.get(0).getEmail());
+		
 	}
 	
 }

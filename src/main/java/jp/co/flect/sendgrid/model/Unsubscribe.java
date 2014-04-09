@@ -27,6 +27,9 @@ public class Unsubscribe extends AbstractModel {
 		
 		public String getEmail() { return doGetString("email");}
 		public void setEmail(String s) { doSetString("email", s);}
+
+		public boolean isDeleteAll() { return doGetInt("delete_all", 0) == 1;}
+		public void setDeleteAll(boolean b) { doSetInt("delete_all", b ? 1 : 0);}
 	}
 	
 	public static class Add extends AbstractRequest {

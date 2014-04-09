@@ -12,13 +12,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-import jp.co.flect.sendgrid.filter.Dkim;
-import jp.co.flect.sendgrid.filter.DomainKeys;
-import jp.co.flect.sendgrid.filter.EventNotify;
-import jp.co.flect.sendgrid.filter.Footer;
-import jp.co.flect.sendgrid.filter.GoogleAnalytics;
-import jp.co.flect.sendgrid.filter.SpamCheck;
 import jp.co.flect.sendgrid.model.App;
+import jp.co.flect.sendgrid.model.apps.DomainKeys;
+import jp.co.flect.sendgrid.model.apps.EventNotify;
 
 import org.junit.Test;
 
@@ -118,19 +114,30 @@ public class AppTest {
 	public void domainkeys() throws Exception {
 		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
 		
-		DomainKeys domainKeys = new DomainKeys(
-				"google.com", false);
+		DomainKeys domainKeys = new DomainKeys();
+		domainKeys.setDomain("google.com");
+		domainKeys.setEnableInsertSender(false);
 		client.setDomainKeys(domainKeys);
 		domainKeys = client.getDomainKeys();
 		assertEquals("google.com", domainKeys.getDomain());
 		assertEquals(false, domainKeys.isEnableInsertSender());
 		
-		domainKeys = new DomainKeys(
-				"yahoo.com", true);
+		domainKeys = new DomainKeys();
+		domainKeys.setDomain("yahoo.com");
+		domainKeys.setEnableInsertSender(true);
 		client.setDomainKeys(domainKeys);
 		domainKeys = client.getDomainKeys();
 		assertEquals("yahoo.com", domainKeys.getDomain());
 		assertEquals(true, domainKeys.isEnableInsertSender());
+	}
+	
+	@Test(expected=SendGridException.class)
+	public void domainkeysEmptyDomain() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		// TODO This implement does not support Empty domain yet.
+		DomainKeys domainKeys = new DomainKeys();
+		domainKeys.setEnableInsertSender(true);
+		client.setDomainKeys(domainKeys);
 	}
 	
 	@Test
@@ -156,9 +163,18 @@ public class AppTest {
 	public void eventnotify() throws Exception {
 		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
 		
-		EventNotify eventNotify = new EventNotify(
-				false, true, false, true, false, true, false, true, false, "http://www.google.com/"
-				);
+		EventNotify eventNotify = new EventNotify();
+		eventNotify.setEnableProcessed(false);
+		eventNotify.setEnableDropped(true);
+		eventNotify.setEnableDeferred(false);
+		eventNotify.setEnableDelivered(true);
+		eventNotify.setEnableBounce(false);
+		eventNotify.setEnableClick(true);
+		eventNotify.setEnableOpen(false);
+		eventNotify.setEnableUnsubscribe(true);
+		eventNotify.setEnableSpamreport(false);
+		eventNotify.setUrl("http://www.google.com/");
+
 		client.setEventNotify(eventNotify);
 		eventNotify = client.getEventNotify();
 		assertEquals(false, eventNotify.isEnableProcessed());
@@ -173,9 +189,18 @@ public class AppTest {
 		assertEquals("http://www.google.com/", eventNotify.getUrl());
 		assertEquals(3, eventNotify.getVersion());
 		
-		eventNotify = new EventNotify(
-				true, false, true, false, true, false, true, false, true, "https://www.yahoo.com/"
-				);
+		eventNotify.setEnableProcessed(true);
+		eventNotify.setEnableDropped(false);
+		eventNotify.setEnableDeferred(true);
+		eventNotify.setEnableDelivered(false);
+		eventNotify.setEnableBounce(true);
+		eventNotify.setEnableClick(false);
+		eventNotify.setEnableOpen(true);
+		eventNotify.setEnableUnsubscribe(false);
+		eventNotify.setEnableSpamreport(true);
+		eventNotify.setUrl("https://www.yahoo.com/");
+		eventNotify.setVersion(1);
+
 		client.setEventNotify(eventNotify);
 		eventNotify = client.getEventNotify();
 		assertEquals(true, eventNotify.isEnableProcessed());
@@ -188,7 +213,20 @@ public class AppTest {
 		assertEquals(false, eventNotify.isEnableUnsubscribe());
 		assertEquals(true, eventNotify.isEnableSpamreport());
 		assertEquals("https://www.yahoo.com/", eventNotify.getUrl());
+		assertEquals(1, eventNotify.getVersion());
+		
+		eventNotify.setVersion(3);
+		client.setEventNotify(eventNotify);
+		eventNotify = client.getEventNotify();
 		assertEquals(3, eventNotify.getVersion());
+		
+	}
+	
+	@Test(expected=SendGridException.class)
+	public void eventnotifyEmptyUrl() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		EventNotify eventNotify = new EventNotify();
+		client.setEventNotify(eventNotify);
 	}
 	
 	@Test

@@ -1,21 +1,33 @@
 package jp.co.flect.sendgrid.model.apps;
 
-public class Dkim {
+import jp.co.flect.sendgrid.model.App;
 
-	public Dkim(String domain, boolean enableUseFrom) {
-		this.domain = domain;
-		this.enableUseFrom = enableUseFrom;
+public class Dkim extends FilterSettings {
+
+	public Dkim() {
+		super();
 	}
 
-	private String domain;
+	public Dkim(App app) {
+		super(app);
+	}
+
+	public void setDomain(String value) {
+		app.setSetting("domain", value);
+	}
 
 	public String getDomain() {
-		return domain;
+		return app.getSettingAsString("domain");
 	}
 
-	private boolean enableUseFrom;
+	public void setEnableUseFrom(boolean value) {
+		String s = value ? "1" : "0";
+		app.setSetting("use_from", s);
+	}
 
 	public boolean isEnableUseFrom() {
-		return enableUseFrom;
+		double d = app.getSettingAsDouble("use_from");
+		return (int)d == 1;
 	}
+
 }

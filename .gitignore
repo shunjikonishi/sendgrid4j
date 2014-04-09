@@ -3,3 +3,4 @@ build.xml
 test.properties
 .classpath
 .project
+.settings/

@@ -1,21 +1,30 @@
 package jp.co.flect.sendgrid.model.apps;
 
-public class Footer {
+import jp.co.flect.sendgrid.model.App;
 
-	public Footer(String textHtml, String textPlain) {
-		this.textHtml = textHtml;
-		this.textPlain = textPlain;
+public class Footer extends FilterSettings {
+
+	public Footer() {
+		super();
 	}
 
-	private String textHtml;
+	public Footer(App app) {
+		super(app);
+	}
+
+	public void setTextHtml(String value) {
+		app.setSetting("text/html", value);
+	}
 
 	public String getTextHtml() {
-		return textHtml;
+		return app.getSettingAsString("text_html");
 	}
 
-	private String textPlain;
+	public void setTextPlain(String value) {
+		app.setSetting("text/plain", value);
+	}
 
 	public String getTextPlain() {
-		return textPlain;
+		return app.getSettingAsString("text_plain");
 	}
 }

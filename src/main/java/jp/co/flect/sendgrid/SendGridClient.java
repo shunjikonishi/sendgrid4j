@@ -225,16 +225,11 @@ public class SendGridClient {
 	
 	public Dkim getDkim() throws IOException, SendGridException {
 		App app = getAppSettings("dkim");
-		return new Dkim(
-				app.getSettingAsString("domain"),
-				(int)app.getSettingAsDouble("use_from") == 0 ? false : true);
+		return new Dkim(app);
 	}
 	
 	public void setDkim(Dkim dkim) throws IOException, SendGridException {
-		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put("domain", dkim.getDomain());
-		settings.put("use_from", dkim.isEnableUseFrom() ? "1" : "0");
-		App app = new App("dkim", settings);
+		App app = new App("dkim", dkim.getSettings());
 		setupApp(app);
 	}
 	
@@ -250,52 +245,31 @@ public class SendGridClient {
 	
 	public Footer getFooter() throws IOException, SendGridException {
 		App app = getAppSettings("footer");
-		return new Footer(
-				app.getSettingAsString("text_html"),
-				app.getSettingAsString("text_plain"));
+		return new Footer(app);
 	}
 	
 	public void setFooter(Footer footer) throws IOException, SendGridException {
-		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put("text/html", footer.getTextHtml());
-		settings.put("text/plain", footer.getTextPlain());
-		App app = new App("footer", settings);
+		App app = new App("footer", footer.getSettings());
 		setupApp(app);
 	}
 
 	public GoogleAnalytics getGoogleAnalytics() throws IOException, SendGridException {
 		App app = getAppSettings("ganalytics");
-		return new GoogleAnalytics(
-				app.getSettingAsString("utm_source"),
-				app.getSettingAsString("utm_medium"),
-				app.getSettingAsString("utm_campaign"),
-				app.getSettingAsString("utm_term"),
-				app.getSettingAsString("utm_content"));
+		return new GoogleAnalytics(app);
 	}
 	
 	public void setGoogleAnalytics(GoogleAnalytics ganalytics) throws IOException, SendGridException {
-		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put("utm_source", ganalytics.getUtmSource());
-		settings.put("utm_medium", ganalytics.getUtmMedium());
-		settings.put("utm_campaign", ganalytics.getUtmCampaign());
-		settings.put("utm_term", ganalytics.getUtmTerm());
-		settings.put("utm_content", ganalytics.getUtmContent());
-		App app = new App("ganalytics", settings);
+		App app = new App("ganalytics", ganalytics.getSettings());
 		setupApp(app);
 	}
 
 	public SpamCheck getSpamCheck() throws IOException, SendGridException {
 		App app = getAppSettings("spamcheck");
-		return new SpamCheck(
-				app.getSettingAsString("max_score"),
-				app.getSettingAsString("url"));
+		return new SpamCheck(app);
 	}
 	
 	public void setSpamCheck(SpamCheck spamCheck) throws IOException, SendGridException {
-		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put("max_score", spamCheck.getMaxScore());
-		settings.put("url", spamCheck.getUrl());
-		App app = new App("spamcheck", settings);
+		App app = new App("spamcheck", spamCheck.getSettings());
 		setupApp(app);
 	}
 

@@ -1,44 +1,55 @@
 package jp.co.flect.sendgrid.model.apps;
 
-public class GoogleAnalytics {
+import jp.co.flect.sendgrid.model.App;
 
-	public GoogleAnalytics(String utmSource, String utmMedium,
-			String utmCampaign, String utmTerm, String utmContent) {
-		this.utmSource = utmSource;
-		this.utmMedium = utmMedium;
-		this.utmCampaign = utmCampaign;
-		this.utmTerm = utmTerm;
-		this.utmContent = utmContent;
+public class GoogleAnalytics extends FilterSettings {
+
+	public GoogleAnalytics() {
+		super();
 	}
 
-	private String utmSource;
+	public GoogleAnalytics(App app) {
+		super(app);
+	}
+
+	public void setUtmSource(String value) {
+		app.setSetting("utm_source", value);
+	}
 
 	public String getUtmSource() {
-		return utmSource;
+		return app.getSettingAsString("utm_source");
 	}
 
-	private String utmMedium;
+	public void setUtfMedium(String value) {
+		app.setSetting("utm_medium", value);
+	}
 
 	public String getUtmMedium() {
-		return utmMedium;
+		return app.getSettingAsString("utm_medium");
 	}
 
-	private String utmCampaign;
+	public void setUtmCampaign(String value) {
+		app.setSetting("utm_campaign", value);
+	}
 
 	public String getUtmCampaign() {
-		return utmCampaign;
+		return app.getSettingAsString("utm_campaign");
 	}
 
-	private String utmTerm;
+	public void setUtfTerm(String value) {
+		app.setSetting("utm_term", value);
+	}
 
 	public String getUtmTerm() {
-		return utmTerm;
+		return app.getSettingAsString("utm_term");
 	}
 
-	private String utmContent;
+	public void setUtmContent(String value) {
+		app.setSetting("utm_content", value);
+	}
 
 	public String getUtmContent() {
-		return utmContent;
+		return app.getSettingAsString("utm_content");
 	}
 
 }

@@ -1,4 +1,4 @@
-package jp.co.flect.sendgrid.filter;
+package jp.co.flect.sendgrid.model.apps;
 
 public class SpamCheck {
 

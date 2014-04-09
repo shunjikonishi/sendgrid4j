@@ -13,8 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import jp.co.flect.sendgrid.model.App;
+import jp.co.flect.sendgrid.model.apps.Dkim;
 import jp.co.flect.sendgrid.model.apps.DomainKeys;
 import jp.co.flect.sendgrid.model.apps.EventNotify;
+import jp.co.flect.sendgrid.model.apps.Footer;
+import jp.co.flect.sendgrid.model.apps.GoogleAnalytics;
+import jp.co.flect.sendgrid.model.apps.SpamCheck;
 
 import org.junit.Test;
 

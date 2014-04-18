@@ -10,13 +10,22 @@ public class JsonUtils {
 	
 	static {
 		Json ret = null;
-		try {
-			Class.forName("com.google.gson.Gson");
-			ret = new JsonByGson();
-		} catch (Exception e) {
+		if (ret == null) {
+			try {
+				Class.forName("com.fasterxml.jackson.databind.ObjectMapper");
+				ret = new JsonByJackson();
+			} catch (Exception e) {
+			}
 		}
 		if (ret == null) {
-			throw new IllegalStateException("Jsonlibraries not found.");
+			try {
+				Class.forName("com.google.gson.Gson");
+				ret = new JsonByGson();
+			} catch (Exception e) {
+			}
+		}
+		if (ret == null) {
+			throw new IllegalStateException("Json libraries not found.");
 		}
 		json = ret;
 	}

@@ -19,8 +19,12 @@ import jp.co.flect.sendgrid.model.SpamReport;
 import jp.co.flect.sendgrid.model.Statistic;
 import jp.co.flect.sendgrid.model.Unsubscribe;
 import jp.co.flect.sendgrid.model.WebMail;
+import jp.co.flect.sendgrid.model.apps.Dkim;
 import jp.co.flect.sendgrid.model.apps.DomainKeys;
 import jp.co.flect.sendgrid.model.apps.EventNotify;
+import jp.co.flect.sendgrid.model.apps.Footer;
+import jp.co.flect.sendgrid.model.apps.GoogleAnalytics;
+import jp.co.flect.sendgrid.model.apps.SpamCheck;
 import jp.co.flect.sendgrid.transport.HttpClientTransport;
 import jp.co.flect.sendgrid.transport.Transport;
 import jp.co.flect.sendgrid.transport.TransportFactory;
@@ -220,6 +224,16 @@ public class SendGridClient {
 		setupApp(app);
 	}
 	
+	public Dkim getDkim() throws IOException, SendGridException {
+		App app = getAppSettings("dkim");
+		return new Dkim(app);
+	}
+	
+	public void setDkim(Dkim dkim) throws IOException, SendGridException {
+		App app = new App("dkim", dkim.getSettings());
+		setupApp(app);
+	}
+	
 	public EventNotify getEventNotify() throws IOException, SendGridException {
 		App app = getAppSettings("eventnotify");
 		return new EventNotify(app);
@@ -230,6 +244,36 @@ public class SendGridClient {
 		setupApp(app);
 	}
 	
+	public Footer getFooter() throws IOException, SendGridException {
+		App app = getAppSettings("footer");
+		return new Footer(app);
+	}
+	
+	public void setFooter(Footer footer) throws IOException, SendGridException {
+		App app = new App("footer", footer.getSettings());
+		setupApp(app);
+	}
+
+	public GoogleAnalytics getGoogleAnalytics() throws IOException, SendGridException {
+		App app = getAppSettings("ganalytics");
+		return new GoogleAnalytics(app);
+	}
+	
+	public void setGoogleAnalytics(GoogleAnalytics ganalytics) throws IOException, SendGridException {
+		App app = new App("ganalytics", ganalytics.getSettings());
+		setupApp(app);
+	}
+
+	public SpamCheck getSpamCheck() throws IOException, SendGridException {
+		App app = getAppSettings("spamcheck");
+		return new SpamCheck(app);
+	}
+	
+	public void setSpamCheck(SpamCheck spamCheck) throws IOException, SendGridException {
+		App app = new App("spamcheck", spamCheck.getSettings());
+		setupApp(app);
+	}
+
 	//InvalidEmails
 	public List<InvalidEmail> getInvalidEmails(InvalidEmail.Get request) throws IOException, SendGridException {
 		String json = doRequest("/invalidemails.get.json", request);

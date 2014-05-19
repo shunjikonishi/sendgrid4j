@@ -13,8 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import jp.co.flect.sendgrid.model.App;
+import jp.co.flect.sendgrid.model.apps.Dkim;
 import jp.co.flect.sendgrid.model.apps.DomainKeys;
 import jp.co.flect.sendgrid.model.apps.EventNotify;
+import jp.co.flect.sendgrid.model.apps.Footer;
+import jp.co.flect.sendgrid.model.apps.GoogleAnalytics;
+import jp.co.flect.sendgrid.model.apps.SpamCheck;
 
 import org.junit.Test;
 
@@ -141,6 +145,34 @@ public class AppTest {
 	}
 	
 	@Test
+	public void dkim() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		Dkim dkim = new Dkim();
+		dkim.setDomain("google.com");
+		dkim.setEnableUseFrom(false);
+		client.setDkim(dkim);
+		dkim = client.getDkim();
+		assertEquals("google.com", dkim.getDomain());
+		assertEquals(false, dkim.isEnableUseFrom());
+		
+		dkim = new Dkim();
+		dkim.setDomain("yahoo.com");
+		dkim.setEnableUseFrom(true);
+		client.setDkim(dkim);
+		dkim = client.getDkim();
+		assertEquals("yahoo.com", dkim.getDomain());
+		assertEquals(true, dkim.isEnableUseFrom());
+	}
+
+	@Test(expected=SendGridException.class)
+	public void dkimEmptyDomain() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		Dkim dkim = new Dkim();
+		client.setDkim(dkim);
+	}
+	
+	@Test
 	public void eventnotify() throws Exception {
 		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
 		
@@ -180,7 +212,7 @@ public class AppTest {
 		eventNotify.setEnableUnsubscribe(false);
 		eventNotify.setEnableSpamreport(true);
 		eventNotify.setUrl("https://www.yahoo.com/");
-		eventNotify.setVersion(1);
+		eventNotify.setVersion(3);
 
 		client.setEventNotify(eventNotify);
 		eventNotify = client.getEventNotify();
@@ -194,7 +226,7 @@ public class AppTest {
 		assertEquals(false, eventNotify.isEnableUnsubscribe());
 		assertEquals(true, eventNotify.isEnableSpamreport());
 		assertEquals("https://www.yahoo.com/", eventNotify.getUrl());
-		assertEquals(1, eventNotify.getVersion());
+		assertEquals(3, eventNotify.getVersion());
 		
 		eventNotify.setVersion(3);
 		client.setEventNotify(eventNotify);
@@ -204,9 +236,117 @@ public class AppTest {
 	}
 	
 	@Test(expected=SendGridException.class)
+	public void eventnotifyOldVersion() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		EventNotify eventNotify = new EventNotify();
+		eventNotify.setUrl("https://www.yahoo.com/");
+		eventNotify.setVersion(1);
+
+		client.setEventNotify(eventNotify);
+	}
+	
+	@Test(expected=SendGridException.class)
 	public void eventnotifyEmptyUrl() throws Exception {
 		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
 		EventNotify eventNotify = new EventNotify();
 		client.setEventNotify(eventNotify);
 	}
+	
+	@Test
+	public void footer() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		Footer footer = new Footer();
+		footer.setTextHtml("<div>フッタ</div>");
+		footer.setTextPlain("フッタ");
+		client.setFooter(footer);
+		footer = client.getFooter();
+		assertEquals("<div>フッタ</div>", footer.getTextHtml());
+		assertEquals("フッタ", footer.getTextPlain());
+		
+		Footer footer2 = new Footer();
+		footer2.setTextHtml("");
+		footer2.setTextPlain("aa");
+		client.setFooter(footer2);
+		footer2 = client.getFooter();
+		assertEquals("", footer2.getTextHtml());
+		assertEquals("aa", footer2.getTextPlain());
+		
+		Footer footer3 = new Footer();
+		footer3.setTextHtml("aa");
+		footer3.setTextPlain("");
+		client.setFooter(footer3);
+		footer3 = client.getFooter();
+		assertEquals("aa", footer3.getTextHtml());
+		assertEquals("", footer3.getTextPlain());
+	}
+	
+	@Test(expected=SendGridException.class)
+	public void footerEmptyAll() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		Footer footer = new Footer();
+		client.setFooter(footer);
+	}
+	
+	@Test
+	public void ganalytics() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		GoogleAnalytics ganalytics = new GoogleAnalytics();
+		ganalytics.setUtmSource("Transactional Email");
+		ganalytics.setUtfMedium("email");
+		ganalytics.setUtmCampaign("Redesigned Transaction");
+		ganalytics.setUtfTerm("Health");
+		ganalytics.setUtmContent("PageB");
+		client.setGoogleAnalytics(ganalytics);
+		ganalytics = client.getGoogleAnalytics();
+		assertEquals("Transactional Email", ganalytics.getUtmSource());
+		assertEquals("email", ganalytics.getUtmMedium());
+		assertEquals("Redesigned Transaction", ganalytics.getUtmCampaign());
+		assertEquals("Health", ganalytics.getUtmTerm());
+		assertEquals("PageB", ganalytics.getUtmContent());
+	}
+	
+	@Test(expected=SendGridException.class)
+	public void ganalyticsEmptyAll() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		GoogleAnalytics ganalytics = new GoogleAnalytics();
+		ganalytics.setUtmSource("");
+		ganalytics.setUtfMedium("");
+		ganalytics.setUtmCampaign("");
+		ganalytics.setUtfTerm("");
+		ganalytics.setUtmContent("");
+		client.setGoogleAnalytics(ganalytics);
+	}
+
+	@Test
+	public void spamcheck() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		SpamCheck spamCheck = new SpamCheck();
+		spamCheck.setMaxScore("1.2");
+		spamCheck.setUrl("");
+		client.setSpamCheck(spamCheck);
+		spamCheck = client.getSpamCheck();
+		assertEquals("1.2", spamCheck.getMaxScore());
+		assertEquals("", spamCheck.getUrl());
+		
+		spamCheck = new SpamCheck();
+		spamCheck.setMaxScore("0.0");
+		spamCheck.setUrl("http://www.google.com/");
+		client.setSpamCheck(spamCheck);
+		spamCheck = client.getSpamCheck();
+		assertEquals("0.0", spamCheck.getMaxScore());
+		assertEquals("http://www.google.com/", spamCheck.getUrl());
+	}
+	
+	@Test(expected=SendGridException.class)
+	public void spamcheckEmptyAll() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		
+		SpamCheck spamCheck = new SpamCheck();
+		client.setSpamCheck(spamCheck);
+	}
+
 }

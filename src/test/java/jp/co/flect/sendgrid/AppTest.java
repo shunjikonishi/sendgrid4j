@@ -212,7 +212,7 @@ public class AppTest {
 		eventNotify.setEnableUnsubscribe(false);
 		eventNotify.setEnableSpamreport(true);
 		eventNotify.setUrl("https://www.yahoo.com/");
-		eventNotify.setVersion(1);
+		eventNotify.setVersion(3);
 
 		client.setEventNotify(eventNotify);
 		eventNotify = client.getEventNotify();
@@ -226,13 +226,23 @@ public class AppTest {
 		assertEquals(false, eventNotify.isEnableUnsubscribe());
 		assertEquals(true, eventNotify.isEnableSpamreport());
 		assertEquals("https://www.yahoo.com/", eventNotify.getUrl());
-		assertEquals(1, eventNotify.getVersion());
+		assertEquals(3, eventNotify.getVersion());
 		
 		eventNotify.setVersion(3);
 		client.setEventNotify(eventNotify);
 		eventNotify = client.getEventNotify();
 		assertEquals(3, eventNotify.getVersion());
 		
+	}
+	
+	@Test(expected=SendGridException.class)
+	public void eventnotifyOldVersion() throws Exception {
+		SendGridClient client = new SendGridClient(USERNAME, PASSWORD);
+		EventNotify eventNotify = new EventNotify();
+		eventNotify.setUrl("https://www.yahoo.com/");
+		eventNotify.setVersion(1);
+
+		client.setEventNotify(eventNotify);
 	}
 	
 	@Test(expected=SendGridException.class)

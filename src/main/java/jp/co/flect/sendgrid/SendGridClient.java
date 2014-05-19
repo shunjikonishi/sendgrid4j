@@ -27,6 +27,7 @@ import jp.co.flect.sendgrid.model.apps.GoogleAnalytics;
 import jp.co.flect.sendgrid.model.apps.SpamCheck;
 import jp.co.flect.sendgrid.transport.HttpClientTransport;
 import jp.co.flect.sendgrid.transport.Transport;
+import jp.co.flect.sendgrid.transport.TransportFactory;
 import jp.co.flect.sendgrid.transport.TransportUtils;
 
 public class SendGridClient {
@@ -44,7 +45,7 @@ public class SendGridClient {
 	}
 	
 	protected Transport createDefaultTransport() {
-		return new HttpClientTransport();
+		return TransportFactory.createDefaultTransport();
 	}
 	
 	public String getBaseUrl() { return this.baseUrl;}

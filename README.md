@@ -9,9 +9,9 @@ Dependency
 ----------
 This library requires following jars.
 
-- JavaMail(http://www.oracle.com/technetwork/java/javamail/index.html)
-- HttpComponents(http://hc.apache.org/)
-- Google gson(https://code.google.com/p/google-gson/)
+- [JavaMail](http://www.oracle.com/technetwork/java/javamail/index.html)
+- http: [AsyncHttpClient](https://github.com/AsyncHttpClient/async-http-client) or [HttpComponents](http://hc.apache.org/)
+- json: [Jackson](https://github.com/FasterXML/jackson) or [Google gson](https://code.google.com/p/google-gson/)
 
 JavaDoc
 -------

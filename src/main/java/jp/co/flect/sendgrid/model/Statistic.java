@@ -10,7 +10,7 @@ public class Statistic extends AbstractModel{
 	}
 	
 	public Date getDate() { return doGetDate("date", false);}
-	public String getCategory() { return doGetString("cateegory");}
+	public String getCategory() { return doGetString("category");}
 	public int getRequests() { return doGetInt("requests", 0);}
 	public int getBounces() { return doGetInt("bounces", 0);}
 	public int getClicks() { return doGetInt("clicks", 0);}

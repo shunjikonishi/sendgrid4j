@@ -2,6 +2,7 @@ package jp.co.flect.sendgrid.transport;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import jp.co.flect.sendgrid.SendGridException;
@@ -11,8 +12,8 @@ import com.ning.http.client.Response;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.ProxyServer;
-import com.ning.http.multipart.StringPart;
-import com.ning.http.multipart.FilePart;
+import com.ning.http.client.multipart.StringPart;
+import com.ning.http.client.multipart.FilePart;
 
 public class AsyncHttpClientTransport implements Transport {
 	
@@ -66,7 +67,7 @@ public class AsyncHttpClientTransport implements Transport {
 				key += "[]";
 			}
 			for (String s : entry.getValue()) {
-				builder.addParameter(key, s);
+				builder.addFormParam(key, s);
 			}
 		}
 		Response res = builder.execute().get();
@@ -86,7 +87,7 @@ public class AsyncHttpClientTransport implements Transport {
 		for (File f : attachement) {
 			String filename = TransportUtils.encodeText(f.getName());
 			String key = "files[" + filename + "]";
-			builder.addBodyPart(new FilePart(key, filename, f, "application/octet-stream", "utf-8"));
+			builder.addBodyPart(new FilePart(key, f, "application/octet-stream", Charset.forName("utf-8"), filename));
 		}
 		Response res = builder.execute().get();
 		return handleResponse(res);
@@ -99,10 +100,10 @@ public class AsyncHttpClientTransport implements Transport {
 		if (this.client == null) {
 			AsyncHttpClientConfig.Builder builder = new AsyncHttpClientConfig.Builder();
 			if (this.connectionTimeout > 0) {
-				builder.setConnectionTimeoutInMs(this.connectionTimeout);
+				builder.setConnectTimeout(this.connectionTimeout);
 			}
 			if (this.soTimeout > 0) {
-				builder.setRequestTimeoutInMs(this.soTimeout);
+				builder.setRequestTimeout(this.soTimeout);
 			}
 			if (this.proxyInfo != null) {
 				ProxyServer proxy = null;

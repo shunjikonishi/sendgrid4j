@@ -6,7 +6,7 @@
 	
 	<groupId>jp.co.flect</groupId>
 	<artifactId>sendgrid4j</artifactId>
-	<version>0.9.3-SNAPSHOT</version>
+	<version>0.9.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>sendgrid4j</name>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>com.ning</groupId>
 			<artifactId>async-http-client</artifactId>
-			<version>1.7.18</version>
+			<version>1.9.21</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

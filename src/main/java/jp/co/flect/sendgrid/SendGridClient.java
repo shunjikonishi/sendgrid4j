@@ -36,7 +36,7 @@ public class SendGridClient {
 	private String apikey;
 	private Transport transport;
 	
-	private String baseUrl = "https://sendgrid.com/api";
+	private String baseUrl = "https://api.sendgrid.com/api";
 	
 	public SendGridClient(String username, String apikey) {
 		this.username = username;

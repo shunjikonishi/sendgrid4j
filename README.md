@@ -1,3 +1,11 @@
+# Deprecated!
+Because now Sendgrid prepares their own official library for Java.
+
+[sendgrid-java](https://github.com/sendgrid/sendgrid-java)
+
+Though this library works well now, this doesn't use new version of SendgridAPI(API v3).
+So, this might not work someday.
+
 sendgrid4j
 ==========
 
